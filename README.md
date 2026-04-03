@@ -1,4 +1,4 @@
-# 🏗️ E-Commerce Data Engineering Pipeline (Medallion Architecture)
+# 🏗️ E-Commerce Data Engineering Pipeline (Medallion Architecture) 
 
 ## 📌 Overview
 

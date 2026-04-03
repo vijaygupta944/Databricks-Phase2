@@ -3,28 +3,46 @@ name: Deploy Databricks Bundle
 on:
   push:
     branches:
-      - main
+      - main       # triggers prod deploy
+      - uat        # triggers uat deploy
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Deployment target (dev / uat / prod)"
+        required: true
+        default: dev
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
+    # ✅ FIXED: Opt into Node.js 24 now to avoid forced migration breaking on June 2 2026
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      # ✅ FIXED: Updated from v4 to v4.2.2 — supports Node.js 24
+      - name: Checkout repository
+        uses: actions/checkout@v4.2.2
+
+      - name: Set deployment target
+        id: set-target
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "target=${{ github.event.inputs.target }}" >> $GITHUB_OUTPUT
+          elif [ "${{ github.ref_name }}" == "main" ]; then
+            echo "target=prod" >> $GITHUB_OUTPUT
+          elif [ "${{ github.ref_name }}" == "uat" ]; then
+            echo "target=uat" >> $GITHUB_OUTPUT
+          else
+            echo "target=dev" >> $GITHUB_OUTPUT
+          fi
 
       - name: Setup Databricks CLI
         uses: databricks/setup-cli@main
 
-      - name: Validate Bundle
-        run: |
-          cd Databricks-Phase2/project
-          databricks bundle validate
-
-      - name: Deploy to Dev
-        run: |
-          cd Databricks-Phase2/project
-          databricks bundle deploy -t dev
+      - name: Deploy bundle
+        run: databricks bundle deploy --target ${{ steps.set-target.outputs.target }}
         env:
-          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+          DATABRICKS_HOST: https://dbc-344bfcd1-36e1.cloud.databricks.com
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}  # ⚠️ Add this secret in GitHub → Settings → Secrets

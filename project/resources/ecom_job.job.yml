@@ -4,31 +4,46 @@ resources:
       name: ecom_pipeline
 
       tasks:
+        # ─────────────────────────────
+        # BRONZE
+        # ─────────────────────────────
         - task_key: bronze
+          job_cluster_key: job_cluster
           notebook_task:
             notebook_path: /Workspace/Users/eswargupta944@gmail.com/Databricks-Phase2/project/src/Bronze
             base_parameters:
               env: ${bundle.target}
             source: WORKSPACE
 
+        # ─────────────────────────────
+        # SILVER
+        # ─────────────────────────────
         - task_key: silver
           depends_on:
             - task_key: bronze
+          job_cluster_key: job_cluster
           notebook_task:
             notebook_path: /Workspace/Users/eswargupta944@gmail.com/Databricks-Phase2/project/src/Silver
             base_parameters:
               env: ${bundle.target}
             source: WORKSPACE
 
+        # ─────────────────────────────
+        # GOLD
+        # ─────────────────────────────
         - task_key: gold
           depends_on:
             - task_key: silver
+          job_cluster_key: job_cluster
           notebook_task:
             notebook_path: /Workspace/Users/eswargupta944@gmail.com/Databricks-Phase2/project/src/Gold
             base_parameters:
               env: ${bundle.target}
             source: WORKSPACE
 
+      # ─────────────────────────────
+      # CLUSTER CONFIG
+      # ─────────────────────────────
       job_clusters:
         - job_cluster_key: job_cluster
           new_cluster:

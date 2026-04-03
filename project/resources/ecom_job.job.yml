@@ -10,7 +10,7 @@ resources:
         - task_key: bronze
           job_cluster_key: job_cluster
           notebook_task:
-            notebook_path: /Workspace/Users/eswargupta944@gmail.com/Databricks-Phase2/project/src/Bronze
+            notebook_path: ${workspace.file_path}/src/Bronze  # ✅ FIXED: uses bundle-managed path
             base_parameters:
               env: ${bundle.target}
             source: WORKSPACE
@@ -23,7 +23,7 @@ resources:
             - task_key: bronze
           job_cluster_key: job_cluster
           notebook_task:
-            notebook_path: /Workspace/Users/eswargupta944@gmail.com/Databricks-Phase2/project/src/Silver
+            notebook_path: ${workspace.file_path}/src/Silver  # ✅ FIXED: uses bundle-managed path
             base_parameters:
               env: ${bundle.target}
             source: WORKSPACE
@@ -36,7 +36,7 @@ resources:
             - task_key: silver
           job_cluster_key: job_cluster
           notebook_task:
-            notebook_path: /Workspace/Users/eswargupta944@gmail.com/Databricks-Phase2/project/src/Gold
+            notebook_path: ${workspace.file_path}/src/Gold  # ✅ FIXED: uses bundle-managed path
             base_parameters:
               env: ${bundle.target}
             source: WORKSPACE

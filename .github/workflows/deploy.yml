@@ -1,22 +1,17 @@
 name: Deploy Databricks Bundle
-
 on:
   push:
     branches:
       - main
       - uat
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true   # FIX 1: Silences Node.js 20 deprecation warning
-
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4.2.2             # FIX 2: Updated from v4 to v4.2.2 (Node.js 24 support)
-
+        uses: actions/checkout@v4.2.2
       - name: Set deployment target
         id: set-target
         run: |
@@ -27,11 +22,10 @@ jobs:
           else
             echo "target=dev" >> $GITHUB_OUTPUT
           fi
-
       - name: Setup Databricks CLI
         uses: databricks/setup-cli@main
-
       - name: Deploy bundle
+        working-directory: ./project
         run: databricks bundle deploy --target ${{ steps.set-target.outputs.target }}
         env:
           DATABRICKS_HOST: https://dbc-344bfcd1-36e1.cloud.databricks.com

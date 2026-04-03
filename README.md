@@ -196,7 +196,3 @@ This project demonstrates a **production-ready data engineering pipeline** with:
 * Scalable architecture
 * Optimized Spark jobs
 * Automated deployment
-
----
-
-⭐ If you found this useful, feel free to star the repo!

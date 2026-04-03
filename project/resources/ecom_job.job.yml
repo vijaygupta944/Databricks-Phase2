@@ -4,52 +4,38 @@ resources:
       name: ecom_pipeline
 
       tasks:
-        # ─────────────────────────────
-        # BRONZE
-        # ─────────────────────────────
         - task_key: bronze
-          job_cluster_key: job_cluster
           notebook_task:
-            notebook_path: ${workspace.file_path}/src/Bronze  # ✅ FIXED: uses bundle-managed path
+            notebook_path: ${workspace.file_path}/src/Bronze
             base_parameters:
               env: ${bundle.target}
             source: WORKSPACE
+          environment_key: default
 
-        # ─────────────────────────────
-        # SILVER
-        # ─────────────────────────────
         - task_key: silver
           depends_on:
             - task_key: bronze
-          job_cluster_key: job_cluster
           notebook_task:
-            notebook_path: ${workspace.file_path}/src/Silver  # ✅ FIXED: uses bundle-managed path
+            notebook_path: ${workspace.file_path}/src/Silver
             base_parameters:
               env: ${bundle.target}
             source: WORKSPACE
+          environment_key: default
 
-        # ─────────────────────────────
-        # GOLD
-        # ─────────────────────────────
         - task_key: gold
           depends_on:
             - task_key: silver
-          job_cluster_key: job_cluster
           notebook_task:
-            notebook_path: ${workspace.file_path}/src/Gold  # ✅ FIXED: uses bundle-managed path
+            notebook_path: ${workspace.file_path}/src/Gold
             base_parameters:
               env: ${bundle.target}
             source: WORKSPACE
+          environment_key: default
 
-      # ─────────────────────────────
-      # CLUSTER CONFIG
-      # ─────────────────────────────
-      job_clusters:
-        - job_cluster_key: job_cluster
-          new_cluster:
-            spark_version: 13.3.x-scala2.12
-            node_type_id: Standard_DS3_v2
-            num_workers: 2
+      environments:
+        - environment_key: default
+          spec:
+            client: "1"
 
       queue:
         enabled: true

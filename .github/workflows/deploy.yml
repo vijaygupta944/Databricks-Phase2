@@ -3,34 +3,24 @@ name: Deploy Databricks Bundle
 on:
   push:
     branches:
-      - main       # triggers prod deploy
-      - uat        # triggers uat deploy
-  workflow_dispatch:
-    inputs:
-      target:
-        description: "Deployment target (dev / uat / prod)"
-        required: true
-        default: dev
+      - main
+      - uat
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
-    # ✅ FIXED: Opt into Node.js 24 now to avoid forced migration breaking on June 2 2026
     env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true   # FIX 1: Silences Node.js 20 deprecation warning
 
     steps:
-      # ✅ FIXED: Updated from v4 to v4.2.2 — supports Node.js 24
       - name: Checkout repository
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v4.2.2             # FIX 2: Updated from v4 to v4.2.2 (Node.js 24 support)
 
       - name: Set deployment target
         id: set-target
         run: |
-          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            echo "target=${{ github.event.inputs.target }}" >> $GITHUB_OUTPUT
-          elif [ "${{ github.ref_name }}" == "main" ]; then
+          if [ "${{ github.ref_name }}" == "main" ]; then
             echo "target=prod" >> $GITHUB_OUTPUT
           elif [ "${{ github.ref_name }}" == "uat" ]; then
             echo "target=uat" >> $GITHUB_OUTPUT
@@ -45,4 +35,4 @@ jobs:
         run: databricks bundle deploy --target ${{ steps.set-target.outputs.target }}
         env:
           DATABRICKS_HOST: https://dbc-344bfcd1-36e1.cloud.databricks.com
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}  # ⚠️ Add this secret in GitHub → Settings → Secrets
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}

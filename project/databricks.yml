@@ -1,0 +1,43 @@
+# Databricks Asset Bundle for ecom_project
+
+bundle:
+  name: ecom_project
+
+variables:
+  catalog:
+    description: "Catalog per environment"
+
+include:
+  - resources/*.yml
+
+# ─────────────────────────────
+# ENVIRONMENTS
+# ─────────────────────────────
+targets:
+  dev:
+    mode: development
+    default: true
+    workspace:
+      host: https://dbc-344bfcd1-36e1.cloud.databricks.com
+    variables:
+      catalog: dev
+
+  uat:
+    mode: production
+    workspace:
+      host: https://dbc-344bfcd1-36e1.cloud.databricks.com
+      root_path: /Workspace/Users/eswargupta944@gmail.com/.bundle/${bundle.name}/${bundle.target}
+    variables:
+      catalog: uat
+
+  prod:
+    mode: production
+    workspace:
+      host: https://dbc-344bfcd1-36e1.cloud.databricks.com
+      root_path: /Workspace/Users/eswargupta944@gmail.com/.bundle/${bundle.name}/${bundle.target}
+    variables:
+      catalog: prod
+
+    permissions:
+      - user_name: eswargupta944@gmail.com
+        level: CAN_MANAGE
